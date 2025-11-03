@@ -37,7 +37,7 @@ public class GameHandler : MonoBehaviour
     {
         float minY = posicaoChao.transform.position.y + 2f;
         float maxY = posicaoTeto.transform.position.y - 2f;
-        float yAleatorio = Random.Range(minY, maxY);
+        float yAleatorio = Random.Range(minY, maxY) -1.5f;
 
         GameObject novoCano = Instantiate(canoDuploPrefab);
         novoCano.transform.position = new Vector3(10f, yAleatorio, 0f);
