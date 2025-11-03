@@ -1,62 +1,76 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameHandler : MonoBehaviour
 {
-    [SerializeField] private GameObject canoDuploPrefab;
-    [SerializeField] private GameObject posicaoChao;
+    // Referencias de posição
     [SerializeField] private GameObject posicaoTeto;
+    [SerializeField] private GameObject posicaoChao;
+    [SerializeField] private GameObject canoDuploPrefab;
 
-    [SerializeField] private float intervaloSpawn = 2f; // tempo entre spawns
-    private float tempoDesdeUltimoSpawn = 0f;
+    // Configurações do jogo
+    [SerializeField] private float tempoSpawn = 2.5f;
+    [SerializeField] private float offsetAltura = -1.5f;
 
-    private bool jogoAtivo = true;
+    // Pontuação
+    [SerializeField] private TextMeshProUGUI textoPontos;
 
-    void Update()
+    private float _tempoAtualSpawn;
+    private int pontos = 0;
+    private bool isGameOver = false;
+
+    private void Start()
     {
-        // Se o jogo acabou, não faz mais nada
-        if (!jogoAtivo) return;
+        _tempoAtualSpawn = tempoSpawn;
+        textoPontos.text = "0";
+    }
 
-        // Verifica se o jogador saiu do mapa
+    private void Update()
+    {
+        if (isGameOver) return;
+
         if (VerificarForaDoMapa())
         {
-            GameOver();
+            PlayerFlappyBird.Instance.GameOver();
+            isGameOver = true;
             return;
         }
 
-        // Controla o spawn dos canos
-        tempoDesdeUltimoSpawn += Time.deltaTime;
-
-        if (tempoDesdeUltimoSpawn >= intervaloSpawn)
-        {
-            SpawnCano();
-            tempoDesdeUltimoSpawn = 0f;
-        }
+        SpawnCano();
     }
 
     private void SpawnCano()
     {
-        float minY = posicaoChao.transform.position.y + 2f;
-        float maxY = posicaoTeto.transform.position.y - 2f;
-        float yAleatorio = Random.Range(minY, maxY) -1.5f;
+        _tempoAtualSpawn -= Time.deltaTime;
 
-        GameObject novoCano = Instantiate(canoDuploPrefab);
-        novoCano.transform.position = new Vector3(10f, yAleatorio, 0f);
+        if (_tempoAtualSpawn <= 0)
+        {
+            float minY = posicaoChao.transform.position.y + 2f;
+            float maxY = posicaoTeto.transform.position.y - 2f;
+
+            float yAleatorio = UnityEngine.Random.Range(minY, maxY) + offsetAltura;
+
+            GameObject novoCano = Instantiate(canoDuploPrefab);
+            novoCano.transform.position = new Vector3(10, yAleatorio, 0);
+
+            _tempoAtualSpawn = tempoSpawn;
+        }
     }
 
     private bool VerificarForaDoMapa()
     {
-        var jogador = PlayerFlappyBird.Instance.transform.position.y;
+        var verticalPos = PlayerFlappyBird.Instance.transform.position.y;
 
-        return (jogador > posicaoTeto.transform.position.y || jogador < posicaoChao.transform.position.y);
+        return (verticalPos > posicaoTeto.transform.position.y ||
+                verticalPos < posicaoChao.transform.position.y);
     }
 
-    public void GameOver()
+    public void AdicionarPonto()
     {
-        // Impede que seja chamado várias vezes
-        if (!jogoAtivo) return;
+        if (isGameOver) return;
 
-        jogoAtivo = false;
-        Debug.Log("GAME OVER");
-        PlayerFlappyBird.Instance.GameOver();
+        pontos++;
+        textoPontos.text = pontos.ToString();
     }
 }
