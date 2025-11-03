@@ -17,8 +17,12 @@ public class Chao : MonoBehaviour
         // move o chao pra esquerda
         transform.Translate(Vector2.left * velocidade * Time.deltaTime);
 
+        Debug.Log("Position " + transform.position.x);
+        Debug.Log("Posicao inicial " + posicaoInicial.x);
+        Debug.Log("Largura do chao " + larguraChao);
+
         // quando sai da tela, volta pra posição inicial
-        if (transform.position.x <= posicaoInicial.x - larguraChao)
+        if (transform.position.x <= posicaoInicial.x - 5)
         {
             transform.position = posicaoInicial;
         }
