@@ -3,6 +3,7 @@ using UnityEngine;
 public class Chao : MonoBehaviour
 {
     [SerializeField] private float velocidade = 4f;
+    private int movimentoDoChaoAntesDeReiniciar = 5;
     private Vector3 posicaoInicial;
     private float larguraChao;
 
@@ -17,12 +18,8 @@ public class Chao : MonoBehaviour
         // move o chao pra esquerda
         transform.Translate(Vector2.left * velocidade * Time.deltaTime);
 
-        Debug.Log("Position " + transform.position.x);
-        Debug.Log("Posicao inicial " + posicaoInicial.x);
-        Debug.Log("Largura do chao " + larguraChao);
-
         // quando sai da tela, volta pra posição inicial
-        if (transform.position.x <= posicaoInicial.x - 5)
+        if (transform.position.x <= posicaoInicial.x - movimentoDoChaoAntesDeReiniciar)
         {
             transform.position = posicaoInicial;
         }
